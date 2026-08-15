@@ -1,5 +1,7 @@
 # dsh-better-model-selector
 
+[![npm version](https://img.shields.io/npm/v/dsh-better-model-selector)](https://www.npmjs.com/package/dsh-better-model-selector)
+
 改造对话界面（composer）的模型选择器：把原来「模型 + 思考强度」集成在一个二级菜单里的组件，拆成两个可以单独设置的独立控件。
 
 - **模型选择器**：保持下拉选单，但增加**搜索**和**标记喜爱（收藏）**功能。
@@ -16,29 +18,53 @@
 
 ## 安装
 
-前置：DSH 已初始化 `web` profile（`dsh web` 可正常运行）。
+前置：DSH 已初始化 `web` profile（`dsh web` 能正常运行），Node.js ≥ 20。
 
-本插件是纯客户端插件，无需构建。将其复制/链接到 profile 的 `node_modules` 并注册到 `cordis.patch.yml`：
+**npm 安装（推荐，自动挂载）**：
 
-1. 把本目录拷贝（或软链）到 `~/.dsh/profiles/web/node_modules/dsh-better-model-selector`。
-2. 在 `~/.dsh/profiles/web/cordis.patch.yml` 追加：
+```sh
+dsh plugin --profile web add dsh-better-model-selector
+```
 
-   ```yaml
-   - insert:
-       - id: dsh-better-model-selector
-         name: dsh-better-model-selector
+该命令会自动：登记依赖 → 识别包内 `dsh.bundle.patch`（`cordis.patch.yml`）→ 注册进 `dsh.profile.bundles` 完成挂载。装完**重启 dsh + 硬刷新浏览器**（Cmd/Ctrl+Shift+R）即可。
+
+若报 `minimum release age`（发布不足 24 小时），重跑一次即可（pnpm 会自动补 `minimumReleaseAgeExclude`）。
+
+**从源码安装（开发）**：把本目录拷贝/软链到 `~/.dsh/profiles/web/node_modules/dsh-better-model-selector`，并在 `~/.dsh/profiles/web/cordis.patch.yml` 追加：
+
+```yaml
+- insert:
+    - id: dsh-better-model-selector
+      name: dsh-better-model-selector
+```
+
+然后重启 `dsh web` + 硬刷新。
+
+## 旧版本迁移（手动挂载 → npm 通道）
+
+若之前通过「源码目录 + 手动挂载行」安装，切到 npm 通道时按顺序执行（**跳过 1、2 步会双挂载**：两个 host 半、出现两份 UI）：
+
+1. 删除手动挂载行：编辑 `~/.dsh/profiles/web/cordis.patch.yml`（早期全局安装可能是 `~/.dsh/cordis.patch.yml`），删除 `dsh-better-model-selector` 对应的 `- insert: { id: ..., name: ... }` 段。
+2. 删除旧包实体：
+
+   ```powershell
+   Remove-Item -Recurse -Force "$HOME\.dsh\profiles\web\node_modules\dsh-better-model-selector"
    ```
 
-3. 重启 `dsh web`（host 侧需要重启以重新扫描 client 包与重组合 cordis 树），然后浏览器硬刷新。
+3. 官方 CLI 安装 npm 版：`dsh plugin --profile web add dsh-better-model-selector`
+4. 重启 dsh + 硬刷新。
+
+> 收藏/凭据不受影响（收藏存于主机级 cookie，与安装方式无关）。
 
 ## 结构
 
 ```
 dsh-better-model-selector/
-├── package.json     # dsh.client（platform: web）+ exports["./client"]
+├── package.json       # dsh.bundle.patch + dsh.client + exports["./client"]
+├── cordis.patch.yml   # 自动挂载补丁（insert 条目）
 └── lib/
-    ├── index.js     # host 半（纯客户端插件，空 apply）
-    └── client.js    # 浏览器半：模型下拉 + 搜索/收藏 + 思考强度滑动条 + 快捷键
+    ├── index.js       # host 半（纯客户端插件，空 apply）
+    └── client.js      # 浏览器半：模型下拉 + 搜索/收藏 + 思考强度滑动条 + 快捷键
 ```
 
 ## 已知限制

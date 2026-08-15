@@ -1,0 +1,8 @@
+# dsh-better-model-selector bundle patch
+# Installed via the official CLI (`dsh plugin --profile <name> add dsh-better-model-selector`),
+# which registers this package into dsh.profile.bundles and merges this patch on startup.
+# If the profile still has an old manual mount line / junction for this plugin, remove it
+# first to avoid double-mounting (two host halves / duplicate UI).
+- insert:
+    - id: dsh-better-model-selector
+      name: 'dsh-better-model-selector'
