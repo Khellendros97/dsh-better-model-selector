@@ -20,6 +20,8 @@
 
 前置：DSH 已初始化 `web` profile（`dsh web` 能正常运行），Node.js ≥ 20。
 
+> ⚠️ 依赖 DSH 的 `next` 通道：peerDependencies 指向 `@deepseek-ai/*` `^0.1.0-rc.6`（npm 上的 `next` dist-tag）。若你的 DSH 走 `latest`（`0.0.1-rc.x`），可能不满足依赖、缺少本插件所需的 `modelDirectories` 服务。
+
 **npm 安装（推荐，自动挂载）**：
 
 ```sh
